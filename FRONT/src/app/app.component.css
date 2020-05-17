@@ -1,0 +1,58 @@
+.logo{
+    background-color: #ededed;
+    display: flex;
+    padding: 20px;
+    margin-left: auto;
+}
+.logo img{
+    margin-left:auto;
+}
+.container {
+    display: flex; /* or inline-flex */
+}
+.container.info{
+    margin-top: 30px;
+    width: auto;  
+}
+.home{
+    background-color: #ededed;
+    height: 100%;
+    padding: 20px;
+}
+.stepBudget{
+    width: 40%;
+    margin: 10px;
+}
+.infoBudget{
+    width: 50%;
+}
+.infoBudgetImage{
+    width:38%;
+}
+.infoBudgetIinfo{
+    width:70%;
+}
+
+.menu{
+    justify-content: space-around;
+}
+.title{
+    font-size: 48px;
+    font-weight: 400;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.subtitle{
+    font-size: 18px;
+    font-weight: 400;
+}
+.budgetContainer{
+    width:59%;
+    padding-right: 0px;
+  }
+
+.list-unstyled {
+    padding-left: 0;
+}
+li{
+    list-style: none;
+}

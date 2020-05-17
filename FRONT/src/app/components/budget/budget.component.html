@@ -1,0 +1,137 @@
+  <!-- PROGRESS BAR -->
+  <mat-progress-bar mode="determinate" [value]=progressbarValue></mat-progress-bar>
+  <mat-horizontal-stepper #stepper [selectedIndex]="stepIndex">
+    <!-- FIRST STEP -->
+    <mat-step [stepControl]="firstFormGroup" [completed]="stepIndex > 0">
+      <ng-template matStepLabel>Descripción</ng-template>
+      <form [formGroup]="firstFormGroup">
+        <div>
+          <mat-form-field>
+            <mat-label>Título</mat-label>
+            <input matInput placeholder="Título del trabajo..." formControlName="title">
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Descripción</mat-label>
+            <input #description matInput placeholder="Descripción del trabajo..." formControlName="description" (blur)="getCategoryDescription(description.value)" required>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Preferencia de fecha</mat-label>
+            <mat-select formControlName="datePreference">
+              <mat-option *ngFor="let datePreference of datePreferences" [value]="datePreference.value">
+                {{datePreference.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-raised-button color="primary" (click)="updatePercentage(1, stepper)" [disabled]="firstFormGroup.invalid">Siguiente</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- SECOND STEP -->
+    <mat-step [stepControl]="secondFormGroup" [completed]="stepIndex > 1">
+      <ng-template matStepLabel>Tipo obra</ng-template>
+      <form [formGroup]="secondFormGroup">
+        <div>
+          <div *ngFor="let cat of categorySuggested">
+            <h5 style="color:orange; font-weight: bold;">Categoría sugerida: </h5>
+            <span>{{cat}}</span>
+          </div>
+          <mat-form-field>
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="category" (selectionChange)="updateSubcategories($event.value)" required>
+              <mat-option *ngFor="let cat of categories" [value]="cat.name">
+                {{cat.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div *ngIf="selectedCategory">
+          <mat-form-field>
+            <mat-label>Subcategoría</mat-label>
+            <mat-select formControlName="subcategory" required>
+              <mat-option *ngFor="let subcategory of subcategories" [value]="subcategory">
+                {{subcategory}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Preferencia de precio</mat-label>
+            <mat-select formControlName="pricePreference" required>
+              <mat-option *ngFor="let pricePreference of pricePreferences" [value]="pricePreference.value">
+                {{pricePreference.viewValue}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button color="primary" (click)="updatePercentage(0, stepper)">Anterior</button>
+          <button mat-raised-button color="primary" (click)="updatePercentage(2, stepper)" [disabled]="secondFormGroup.invalid">Siguiente</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- THIRD STEP -->
+    <mat-step [stepControl]="thirdFormGroup" [completed]="stepIndex > 2">
+      <ng-template matStepLabel>Datos personales</ng-template>
+      <form [formGroup]="thirdFormGroup">
+        <div>
+          <mat-form-field>
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="name" placeholder="Nombre..." required>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Email</mat-label>
+            <input #email matInput formControlName="email" placeholder="Email..." (blur)="checkEmail(email.value)" required>
+            <span style="color:red;" *ngIf="showEmailError">El email no puede ser hotmail</span>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Teléfono</mat-label>
+            <input matInput formControlName="phone" maxlength="9" placeholder="Teléfono..." required>
+          </mat-form-field>
+        </div>
+        <div>
+          <mat-form-field>
+            <mat-label>Dirección</mat-label>
+            <input matInput formControlName="address"  placeholder="Dirección...">
+          </mat-form-field>
+        </div>
+        <div>
+          <button mat-button  color="primary" (click)="updatePercentage(1, stepper)">Anterior</button>
+          <button mat-raised-button  color="primary" (click)="updatePercentage(3, stepper)" [disabled]="!emailValidated || thirdFormGroup.invalid">Siguiente</button>
+        </div>
+      </form>
+    </mat-step>
+    <!-- FOUR STEP -->
+    <mat-step [completed]="stepIndex > 3">
+      <ng-template matStepLabel>Resumen</ng-template>
+      <div *ngIf="resume">
+        <h2>Resumen del presupuesto</h2>
+        <p>Título del presupuesto:<span> {{resume.firstForm.title}}</span></p>
+        <p>Descripción del presupuesto:<span> {{resume.firstForm.description}}</span></p>
+        <p>Preferencia de día: <span>{{resume.firstForm.datePreference}}</span></p>
+        <p>Categoría: <span>{{resume.secondForm.category}}</span></p>
+        <p>Subcategoría: <span>{{resume.secondForm.subcategory}}</span></p>
+        <p>Preferencia de precio: <span>{{resume.secondForm.pricePreference}}</span></p>
+        <p>Email: <span>{{resume.thirdForm.email}}</span></p>
+        <p>Nombre: <span>{{resume.thirdForm.name}}</span></p>
+        <p>Teléfono: <span>{{resume.thirdForm.phone}}</span></p>
+        <p>Dirección: <span>{{resume.thirdForm.address}}</span></p>
+      </div>
+      <div>
+        <button mat-button color="primary" (click)="updatePercentage(2, stepper)">Anterior</button>
+        <button type="submit" mat-raised-button color="primary" (click)="createBudget()">Confirmar</button>
+        <button mat-raised-button color="accent" (click)="reset(stepper)">Borrar</button>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
+  
