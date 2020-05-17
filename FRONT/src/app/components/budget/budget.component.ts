@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import {FormBuilder, FormGroup, Validators,} from '@angular/forms';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { BudgetService } from '../../services/budgetservice.service';
 import {MatStepperModule} from '@angular/material/stepper';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
 interface Category {
   name: string;
@@ -18,6 +19,30 @@ interface DatePreference {
   value: string;
   viewValue: string;
 }
+export interface DialogData {
+  message: string;
+}
+@Component({
+  selector: 'dialog-overview-example-dialog',
+  template: `
+              <h1 mat-dialog-title>{{data.message}}</h1>
+              <div mat-dialog-actions>
+                <button mat-button (click)="onNoClick()">Cerrar</button>
+              </div>
+            `,
+})
+export class DialogOverviewExampleDialog {
+
+  constructor(
+    public dialogRef: MatDialogRef<DialogOverviewExampleDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+}
+
 const API_CREATE_BUDGET = "http://localhost:8080/api/budget/createBudget"
 const API_CATEGORIES = "http://localhost:8080/api/category/getCategories"
 
@@ -64,7 +89,7 @@ export class BudgetComponent implements OnInit {
     {value: 'Mas-de-3-meses-2', viewValue: 'Más de 3 meses'},
   ];
 
-  constructor(private _formBuilder: FormBuilder, public http: HttpClient, private budgetservice: BudgetService) {}
+  constructor(private _formBuilder: FormBuilder, public http: HttpClient, private budgetservice: BudgetService, public dialog: MatDialog) {}
 
   ngOnInit() {
     this.getLocalStorage();
@@ -221,7 +246,10 @@ export class BudgetComponent implements OnInit {
     this.buildBudgetForm();
     this.budgetservice.postCall(API_CREATE_BUDGET, this.budget).subscribe(
       resp => {
-        alert("Presupuesto enviado con éxito");
+        const dialogRef = this.dialog.open(DialogOverviewExampleDialog, {
+          width: '250px',
+          data: {message: 'Presupuesto enviado con éxito'}
+        });
       },
       error => {
         alert("Ha habido un error en el envío del presupuesto")
